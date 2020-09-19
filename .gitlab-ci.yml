@@ -6,6 +6,8 @@ deploy-ansible:
   image: unicred/ansible-docker
   variables:
     GITLAB_RUNNER_REPLICAS: 3
+    GITLAB_URL: "https://gitlab-lab.docs-planet.site/"
+    ANSIBLE_LIMIT: all
   before_script:
     - echo "Setting environment"
     - eval $(ssh-agent -s)
@@ -20,7 +22,7 @@ deploy-ansible:
        -e gitlab_runner_replicas=${GITLAB_RUNNER_REPLICAS} \
        -e deploy_runner="${DEPLOY_RUNNER}" \
        -e delete_runner="${DELETE_RUNNER}" \
-       --limit=build_runners
+       --limit=${ANSIBLE_LIMIT}
   tags:
     - deploy
   when: manual

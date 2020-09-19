@@ -4,7 +4,9 @@ Playbook to provision gitlab runners running in container
 
 ## Prereq 
 
-Docker 19.03
+- 2 VMs running docker 19.03 
+  - 1 VM to use as runner build server
+  - 1 VM to use as runner deploy server
 
 ## Deploy 
 
