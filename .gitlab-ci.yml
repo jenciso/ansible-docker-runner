@@ -1,0 +1,29 @@
+stages:
+  - deploy
+
+deploy-ansible:
+  stage: deploy
+  image: unicred/ansible-docker
+  variables:
+    GITLAB_RUNNER_REPLICAS: 3
+  before_script:
+    - echo "Setting environment"
+    - eval $(ssh-agent -s)
+    - echo "${SSH_PRIVATE_KEY}" | tr -d ' ' | base64 --decode | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  script:
+    - echo "Deploying via ansible"
+    - >
+      cd ansible && ansible-playbook main.yaml -i inventory \
+       -e gitlab_registration_token=${GITLAB_REGISTRATION_TOKEN} \
+       -e gitlab_runner_replicas=${GITLAB_RUNNER_REPLICAS} \
+       -e deploy_runner="${DEPLOY_RUNNER}" \
+       -e delete_runner="${DELETE_RUNNER}" \
+       --limit=build_runners
+  tags:
+    - deploy
+  when: manual
+  except:
+    variables:
+      - $SKIP_DEPLOY

@@ -1,0 +1,87 @@
+---
+- name: gitlab-runner | playbook to provision runners
+  hosts: all
+  remote_user: ansible
+  become: True
+  become_user: root
+
+  vars_files:
+   - vars.yaml
+
+  tasks:
+
+   - name: gitlab-runner | download the image
+     shell: docker pull {{ gitlab_runner_image }}
+     when:
+       - deploy_runner | bool
+       - not delete_runner | bool
+
+       
+   - name: gitlab-runner | start multiple runnners
+     shell: >
+       export id=$(date | md5sum | head -c 6)
+
+       docker run --rm -v /etc/gitlab-runner/gitlab-runner-$id:/etc/gitlab-runner \
+         {{ gitlab_runner_image }} register \
+         --non-interactive \
+         --executor "docker" \
+         --docker-image alpine:latest \
+         --docker-volumes "/var/run/docker.sock:/var/run/docker.sock" \
+         --docker-privileged=true \
+         --url "{{ gitlab_url }}" \
+         --registration-token "{{ gitlab_registration_token }}" \
+         --description "docker-runner" \
+         --tag-list '{{ tag_list | default('shared') }}' \
+         --run-untagged="{{ run_untagged | default('true') }}" \
+         --locked="false" \
+         --access-level="not_protected"
+
+       docker run -d \
+         --name gitlab-runner-$id --restart always \
+         -l app=gitlab-runner \
+         -v /etc/gitlab-runner/gitlab-runner-$id:/etc/gitlab-runner \
+         -v /var/run/docker.sock:/var/run/docker.sock \
+         {{ gitlab_runner_image }}
+     with_sequence: count={{ gitlab_runner_replicas }}
+     when: 
+       - deploy_runner | bool
+       - not delete_runner | bool 
+
+
+   - name: gitlab-runner | Get container_id
+     shell: "docker inspect --format '{{ '{{' }} .Name {{ '}}' }}' $(docker ps -q --filter='label=app=gitlab-runner')"
+     register: container_name
+     when: 
+       - delete_runner | bool
+
+
+   - name: gitlab-runner | Stop and delete runners
+     shell: >
+       docker stop {{ item | replace('/','') }} && docker rm {{ item | replace('/','') }}
+     with_items:
+       - "{{ container_name.stdout_lines }}"
+     ignore_errors: true
+     when:
+       - delete_runner | bool
+
+
+   - name: gitlab-runner | Unregister runners
+     shell: >
+       docker run --rm -v /etc/gitlab-runner/{{ item | replace('/','') }}:/etc/gitlab-runner \
+         gitlab/gitlab-runner unregister --all-runners 
+     with_items: 
+       - "{{ container_name.stdout_lines }}"
+     ignore_errors: true
+     when: 
+       - delete_runner | bool
+
+
+   - name: gitlab-runner | delete config 
+     file:
+       path: /etc/gitlab-runner/{{ item | replace('/','') }}
+       state: absent
+     with_items:
+       - "{{ container_name.stdout_lines }}"
+     ignore_errors: true
+     when:
+       - delete_runner | bool

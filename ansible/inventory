@@ -1,0 +1,5 @@
+[build_runners]
+runner-build.docs-planet.site   run_untagged=true   tag_list='build, shared'
+
+[deploy_runners]
+runner-deploy.docs-planet.site  run_untagged=false  tag_list='deploy, shared'

@@ -1,0 +1,9 @@
+---
+gitlab_registration_token: "my_registration_token"
+gitlab_url: "https://gitlab-lab.docs-planet.site"
+gitlab_runner_version: "v13.4.0"
+gitlab_runner_image: "gitlab/gitlab-runner:{{ runner_version | default('latest') }}"
+gitlab_runner_replicas: 1
+
+delete_runner: false
+deploy_runner: false
