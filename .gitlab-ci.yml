@@ -3,7 +3,7 @@ stages:
 
 deploy-ansible:
   stage: deploy
-  image: unicred/ansible-docker
+  image: jenciso/ansible-docker
   variables:
     GITLAB_RUNNER_REPLICAS: 3
     GITLAB_URL: "https://gitlab-lab.docs-planet.site/"
