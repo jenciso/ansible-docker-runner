@@ -16,23 +16,13 @@ docker pull gitlab/gitlab-runner:latest
 
 #### Prerequisites 
 
-Minimum 2 hosts:
+* Docker 19.03
 
-- runner-deploy  (2GB RAM) - Runner to deploy artifacts
-- runner-build   (2GB RAM) - Runner to build artifacts
+* Minimum 2 VMs:
+   - runner-deploy  (2GB RAM) - Runner to deploy artifacts
+   - runner-build   (2GB RAM) - Runner to build artifacts
 
-#### One simple Runner
-
-```shell
-docker run \
-  -d --name gitlab-runner --restart always \
-  -v /srv/gitlab-runner/config:/etc/gitlab-runner \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  gitlab/gitlab-runner:latest
-```
-> Later you need to register it
-
-#### Multiple Runners using differents ID's
+#### Provision one runner (localhost)
 
 * Export some variables
 
@@ -71,11 +61,10 @@ docker run -d \
   gitlab/gitlab-runner:latest
 ```
 
-* Stop the runner
+* Delete and stop the runner
 
 ```
-docker stop gitlab-runner-$id
-docker rm gitlab-runner-$id
+docker rm -f gitlab-runner-$id
 ```
 			
 * Unregister the runner
@@ -85,7 +74,7 @@ docker run --rm -v /etc/gitlab-runner/runner-$id:/etc/gitlab-runner \
   gitlab/gitlab-runner unregister --all-runners
 ```
 
-* Delete config
+* Delete the runner configuration
 
 ```shell
 rm -rf /etc/gitlab-runner/runner-$id

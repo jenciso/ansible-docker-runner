@@ -19,6 +19,7 @@ deploy-ansible:
     - >
       cd ansible && ansible-playbook main.yaml -i inventory \
        -e gitlab_registration_token=${GITLAB_REGISTRATION_TOKEN} \
+       -e gitlab_url=${GITLAB_URL} \
        -e gitlab_runner_replicas=${GITLAB_RUNNER_REPLICAS} \
        -e deploy_runner="${DEPLOY_RUNNER}" \
        -e delete_runner="${DELETE_RUNNER}" \
