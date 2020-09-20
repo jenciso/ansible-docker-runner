@@ -77,5 +77,5 @@ docker run --rm -v /etc/gitlab-runner/runner-$id:/etc/gitlab-runner \
 * Delete the runner configuration
 
 ```shell
-rm -rf /etc/gitlab-runner/runner-$id
+sudo rm -rf /etc/gitlab-runner/runner-$id
 ```
