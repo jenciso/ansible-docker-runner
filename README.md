@@ -1,10 +1,10 @@
-## Gitlab Runner
+# Gitlab Runner
 
-### Intro 
+## Intro 
 
 This is a Gitlab Runner provision project based on ansible and gitlab-ci.
 
-### Build
+## Build
 
 We are using the official image and no use a custom image
 
@@ -12,9 +12,9 @@ We are using the official image and no use a custom image
 docker pull gitlab/gitlab-runner:latest
 ```
 
-### Deploy 
+## Deploy 
 
-#### Prerequisites 
+### Prerequisites 
 
 * Docker 19.03
 
@@ -22,9 +22,9 @@ docker pull gitlab/gitlab-runner:latest
    - runner-deploy  (2GB RAM) - Runner to deploy artifacts
    - runner-build   (2GB RAM) - Runner to build artifacts
 
-#### Provision one runner (localhost)
+### Create a privisioner runner (localhost)
 
-* Export some variables
+* Export variables
 
 ```shell
 export REGISTRATION_TOKEN=MY_GITLAB_TOKEN
@@ -60,6 +60,12 @@ docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
   gitlab/gitlab-runner:latest
 ```
+
+### Provision the runners using gitlab-ci
+
+Run manually the pipeline
+
+### Delete the provisioner runner
 
 * Delete and stop the runner
 
