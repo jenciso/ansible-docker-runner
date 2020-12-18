@@ -1,7 +1,7 @@
 ---
 - name: gitlab-runner | playbook to provision runners
   hosts: all
-  remote_user: ansible
+  remote_user: centos
   become: True
   become_user: root
 
