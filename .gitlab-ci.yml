@@ -6,7 +6,7 @@ deploy-ansible:
   image: jenciso/ansible-docker
   variables:
     GITLAB_RUNNER_REPLICAS: 3
-    GITLAB_URL: "https://gitlab-lab.docs-planet.site/"
+    GITLAB_URL: "https://gitlab.docs-planet.site/"
     ANSIBLE_LIMIT: all
   before_script:
     - echo "Setting environment"
